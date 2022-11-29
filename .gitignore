@@ -1,0 +1,7 @@
+benchmarks/*
+
+*.so
+
+thirdparty/*
+
+*.pyc

@@ -1,0 +1,1 @@
+python dreamplace/Placer.py test/mlcong/mgc_matrix_mult_c.json
