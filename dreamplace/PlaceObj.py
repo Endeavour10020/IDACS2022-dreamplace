@@ -1050,7 +1050,66 @@ class PlaceObj(nn.Module):
         """
         ############## Your code block begins here ##############
         # hint: You can use the density_map op for fixed_node_map_op
-        return None 
+        # input pos
+        # pinrudy_utilization_map_op
+        # build_rudy_utilization_map
+        # density_map
+        # params for model config
+
+        def std(input):
+            if input.max() == 0 or input.max()==input.min():
+                return input
+            else:
+                result = (input-input.min()) / (input.max()-input.min())
+                return result
+
+
+        def build_density_map_func(data_collections):
+            return density_map.DensityMap(
+                node_size_x=data_collections.node_size_x,
+                node_size_y=data_collections.node_size_y,
+                xl=placedb.routing_grid_xl,
+                yl=placedb.routing_grid_yl,
+                xh=placedb.routing_grid_xh,
+                yh=placedb.routing_grid_yh,
+                num_bins_x=placedb.num_routing_grids_x,  # check here
+                num_bins_y=placedb.num_routing_grids_y,
+                range_list=[[placedb.num_movable_nodes, placedb.num_movable_nodes + placedb.num_terminals]],  # 2d list
+                deterministic_flag=params.deterministic_flag,
+            )
+
+        density_map_func = build_density_map_func(data_collections)
+        ml_cong_model = ml_congestion.MLCongestion(**params.toJson())
+
+        def save_img(tensor_array, name="pin", path='./'):
+            from PIL import Image
+
+            if len(tensor_array.shape) ==3:
+                tensor_array = tensor_array.squeeze(0)
+
+            def norm(im):
+                im=(im-im.min())/(im.max()-im.min())*255
+                im=im.astype(np.uint8)
+                return im
+
+            def save_im(im, name=None, path=None):
+                im = Image.fromarray(im)
+                im.save(f'{path}/{name}.png')
+            save_im(norm(tensor_array.detach().cpu().numpy()), name=name, path=path)
+
+        def prediction(pos):
+            # map func
+            pin_pos = self.op_collections.pin_pos_op(pos)
+            feature_rudy_utilization = self.op_collections.rudy_utilization_map_op(pin_pos).unsqueeze(0)
+            feature_pinrudy_utilization = self.op_collections.pinrudy_utilization_map_op(pin_pos).unsqueeze(0)
+            feature_macro_map = density_map_func(pos).unsqueeze(0)
+
+            # feature normalization and resize
+            features = torch.cat([std(feature_macro_map), std(feature_rudy_utilization), std(feature_pinrudy_utilization)], dim=0).unsqueeze(0)  # 注意顺序
+
+            return ml_cong_model.forward(features).add_(1)
+
+        return prediction
         ############## Your code block ends here ################
 
     def build_adjust_node_area(self, params, placedb, data_collections):
@@ -1066,7 +1125,7 @@ class PlaceObj(nn.Module):
         total_place_area = (total_movable_area + total_filler_area
                             ) / data_collections.target_density
         ############## Your code block begins here ##############
-        adjust_node_area_op = adjust_node_area.AdjustNodeArea(
+        adjust_node_area_op = adjust_node_area.AdjustNodeArea(  # 检查这里
             flat_node2pin_map=data_collections.flat_node2pin_map,
             flat_node2pin_start_map=data_collections.flat_node2pin_start_map,
             pin_weights=data_collections.pin_weights,

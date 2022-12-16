@@ -14,7 +14,7 @@ import pdb
 import dreamplace.ops.rudy.rudy as rudy
 import dreamplace.ops.pinrudy.pinrudy as pinrudy
 ############## Your code block begins here ##############
-# import your ML model 
+from .gpdl import GPDL
 ############## Your code block ends here ################
 
 class MLCongestion(nn.Module):
@@ -35,27 +35,22 @@ class MLCongestion(nn.Module):
     @param pretrained_ml_congestion_weight_file file path for pretrained weights of the machine learning model 
     """
     def __init__(self,
-                 fixed_node_map_op,
-                 rudy_utilization_map_op, 
-                 pinrudy_utilization_map_op, 
-                 pin_pos_op, 
-                 xl,
-                 xh,
-                 yl,
-                 yh,
-                 num_bins_x,
-                 num_bins_y,
-                 unit_horizontal_capacity,
-                 unit_vertical_capacity,
-                 pretrained_ml_congestion_weight_file):
+                 in_channels=3,
+                 out_channels=1,
+                 pretrained_ml_congestion_weight_file=None,
+                 **kwargs):
         super(MLCongestion, self).__init__()
         ############## Your code block begins here ##############
         ############## Your code block ends here ################
+        self.model = GPDL(in_channels=in_channels, out_channels=out_channels)
+        self.model.eval()
+        self.model.init_weights(pretrained=pretrained_ml_congestion_weight_file)
+        self.model.cuda()
 
     def __call__(self, pos):
         return self.forward(pos)
 
-    def forward(self, pos):
+    def forward(self, pos):  # note
         ############## Your code block begins here ##############
-        return None
+        return self.model.forward(pos)
         ############## Your code block ends here ################

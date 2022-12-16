@@ -173,7 +173,7 @@ class AdjustNodeArea(nn.Module):
                 #topk, indices = route_utilization_map.view(-1).topk(int(0.1 * route_utilization_map.numel()))
                 #route_utilization_map_clamp = route_utilization_map.mul(1.0 / max(topk.min(), 1))
                 #route_utilization_map_clamp.pow_(2.5).clamp_(min=self.min_route_opt_adjust_rate, max=self.max_route_opt_adjust_rate)
-                route_utilization_map_clamp = route_utilization_map.pow(
+                route_utilization_map_clamp = route_utilization_map.pow(  # inflate ratio
                     self.route_opt_adjust_exponent).clamp_(
                         min=self.min_route_opt_adjust_rate,
                         max=self.max_route_opt_adjust_rate)
@@ -195,7 +195,7 @@ class AdjustNodeArea(nn.Module):
                 area_increment = F.relu(
                     torch.max(route_opt_area, pin_opt_area) - old_movable_area)
             elif adjust_route_area_flag:
-                area_increment = F.relu(route_opt_area - old_movable_area)
+                area_increment = F.relu(route_opt_area - old_movable_area)  # increase area
             else:
                 area_increment = F.relu(pin_opt_area - old_movable_area)
             area_increment_sum = area_increment.sum()

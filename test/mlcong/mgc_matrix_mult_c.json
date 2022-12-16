@@ -25,7 +25,7 @@
 "plot_flag" : 0,
 "random_center_init_flag" : 1,
 "sort_nets_by_degree" : 0,
-"routability_opt_flag" : 0,
+"routability_opt_flag" : 1,
 "max_num_area_adjust" : 5, 
 "route_num_bins_x" : 256, 
 "route_num_bins_y" : 256, 
@@ -45,8 +45,9 @@
 "route_opt_adjust_exponent" : 2.5, 
 "pin_stretch_ratio" : 1.414213562, 
 "max_pin_opt_adjust_rate" : 1.5, 
-"pretrained_ml_congestion_weight_file" : "./congestion.pth",
+"pretrained_ml_congestion_weight_file" : "../circuitnet_course/work_dir/congestion_gpdl_ispd_wo_pretrain/model_iters_200000.pth",
 "num_threads" : 8,
 "deterministic_flag" : 1, 
-"sol_file_format" : "DEF"
+"sol_file_format" : "DEF",
+"test_flag": "test"
 }

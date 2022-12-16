@@ -136,7 +136,7 @@ class EvalMetrics (object):
                 pin_utilization_map_sum = pin_utilization_map.sum()
                 self.pin_utilization = pin_utilization_map.sub_(1).clamp_(min=0).sum() / pin_utilization_map_sum
             if "ml_congestion" in ops:
-                ml_congestion_map = ops["ml_congestion"](var)
+                ml_congestion_map = ops["ml_congestion"](var)  # NOTE:
                 ml_congestion_map_sum = ml_congestion_map.sum()
                 self.ml_congestion = ml_congestion_map.sub_(1).clamp_(min=0).sum() / ml_congestion_map_sum
         self.eval_time = time.time() - tt

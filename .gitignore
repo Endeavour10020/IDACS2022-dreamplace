@@ -5,3 +5,7 @@ benchmarks/*
 thirdparty/*
 
 *.pyc
+
+logs/*
+
+results/*

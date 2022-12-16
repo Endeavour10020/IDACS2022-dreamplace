@@ -330,7 +330,7 @@ class NonLinearPlace(BasicPlace.BasicPlace):
                         else:
                             best_pos[0].data.copy_(self.pos[0].data)
 
-                    logging.info("full step %.3f ms" % ((time.time() - t0) * 1000))
+                    # logging.info("full step %.3f ms" % ((time.time() - t0) * 1000))
 
                 def check_plateau(x, window=10, threshold=0.001):
                     if len(x) < window:
@@ -695,4 +695,31 @@ class NonLinearPlace(BasicPlace.BasicPlace):
         # plot placement
         if params.plot_flag:
             self.plot(params, placedb, iteration, cur_pos)
+
+        if params.routability_opt_flag:
+            if params.adjust_ml_congestion_area_flag:
+                # eval metrics
+                print('>>>>> start evaling >>>>>')
+                congestion_map = model.op_collections.ml_congestion_map_op(self.pos[0])
+
+                top_k_list = [0.005, 0.01, 0.02, 0.05]
+                bins_all = params.route_num_bins_x* params.route_num_bins_y
+
+                congestion_map_sorted, indices = torch.sort(congestion_map.view(-1, ))
+
+                avg_cong_sum = 0
+                for top_k_idx in top_k_list:
+                    avg_cong_sum += congestion_map_sorted[:int(top_k_idx*bins_all)].sum(dim=0).data.cpu().numpy()/int(top_k_idx*bins_all)/len(top_k_list)
+
+                try:
+                    from prettytable import PrettyTable
+                except ModuleNotFoundError:
+                    print('need to install prettytable')
+                
+                final_hpwl = cur_metric.hpwl
+                shpwl = final_hpwl*(1+0.03*100*avg_cong_sum)
+                table = PrettyTable(['HPWL','Cong','sHPWL'])
+                table.add_row([f'{final_hpwl}',f'{avg_cong_sum}',f'{shpwl}'])
+                print(table)
+
         return all_metrics
