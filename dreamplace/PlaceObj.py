@@ -264,6 +264,14 @@ class PlaceObj(nn.Module):
             # adjust instance area with congestion map
             self.op_collections.adjust_node_area_op = self.build_adjust_node_area(
                 params, placedb, self.data_collections)
+        
+        if params.eval_shpwl:
+            self.op_collections.rudy_utilization_map_op = self.build_rudy_utilization_map(
+                params, placedb, self.data_collections)
+            self.op_collections.pinrudy_utilization_map_op = self.build_pinrudy_utilization_map(
+                params, placedb, self.data_collections)
+            self.op_collections.ml_congestion_map_op = self.build_ml_congestion_map(
+                    params, placedb, self.data_collections)
 
         self.Lgamma_iteration = global_place_params["iteration"]
         if 'Llambda_density_weight_iteration' in global_place_params:

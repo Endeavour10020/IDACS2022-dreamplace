@@ -48,5 +48,6 @@
 "pretrained_ml_congestion_weight_file" : "../circuitnet_course/work_dir/congestion_gpdl_ispd_wo_pretrain/model_iters_200000.pth",
 "num_threads" : 8,
 "deterministic_flag" : 1, 
-"sol_file_format" : "DEF"
+"sol_file_format" : "DEF",
+"eval_shpwl": 1
 }
