@@ -9,3 +9,13 @@ thirdparty/*
 logs/*
 
 results/*
+
+logs_new/*
+
+logs_new_4p/*
+
+logs_new_4p_wopretrain/*
+
+logs_new_ori/*
+
+logs_new_ori_wopretrain/*

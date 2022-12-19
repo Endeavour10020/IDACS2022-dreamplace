@@ -1114,6 +1114,7 @@ class PlaceObj(nn.Module):
 
             # feature normalization and resize
             features = torch.cat([std(feature_macro_map), std(feature_rudy_utilization), std(feature_pinrudy_utilization)], dim=0).unsqueeze(0)  # 注意顺序
+            ml_cong_model.eval()
 
             return ml_cong_model.forward(features).add_(1)
 

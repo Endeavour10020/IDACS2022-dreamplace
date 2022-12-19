@@ -704,7 +704,9 @@ class NonLinearPlace(BasicPlace.BasicPlace):
             top_k_list = [0.005, 0.01, 0.02, 0.05]
             bins_all = params.route_num_bins_x* params.route_num_bins_y
 
-            congestion_map_sorted, indices = torch.sort(congestion_map.view(-1, ))
+            congestion_map_cal = congestion_map*100
+
+            congestion_map_sorted, indices = torch.sort(congestion_map_cal.view(-1, ), descending=True)
 
             avg_cong_sum = 0
             for top_k_idx in top_k_list:
